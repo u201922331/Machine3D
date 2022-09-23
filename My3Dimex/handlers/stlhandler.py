@@ -59,9 +59,9 @@ class STL:
     def fromDataFrame(cls, df: pd.DataFrame):
         output = STL(f"Made in Python {sys.version}", [])
         for _, t in df.iterrows():
-            output.triangles.append(Triangle(t['Normal'].values,
-                                             [t['P0'].values,
-                                              t['P1'].values,
-                                              t['P2'].values],
-                                             t['Attribute'].values))
+            output.triangles.append(Triangle(t['Normal'],
+                                             [t['P0'],
+                                              t['P1'],
+                                              t['P2']],
+                                             t['Attribute']))
         return output
