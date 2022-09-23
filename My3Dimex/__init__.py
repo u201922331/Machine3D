@@ -1,6 +1,4 @@
-from . import vectors
-from . import triangle
-from . import handlers
+from . import vectors, triangle, handlers
 
 versionMag = 1
 versionMin = 0

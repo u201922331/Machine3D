@@ -1,12 +1,12 @@
 import struct
 from dataclasses import dataclass
 from typing import List
-from ..triangle import Triangle
 from copy import deepcopy
 import numpy as np
 import pandas as pd
 import sys
 from ..vectors import Vec3
+from ..triangle import Triangle
 
 
 @dataclass

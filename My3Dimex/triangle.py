@@ -12,7 +12,9 @@ class Triangle:
     attrib: int
 
     def __repr__(self):
-        return f"{dict(zip(('Normal', 'Vertices', 'Attrib'), (self.normal, self.vertices, self.attrib)))}"
+        return f'Normals: {self.normal}\n' \
+               f'Vertices: {self.vertices}\n' \
+               f'Attribute: {self.attrib}'
 
     @classmethod
     def read(cls, file: BinaryIO):
