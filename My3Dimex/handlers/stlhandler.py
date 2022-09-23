@@ -15,9 +15,12 @@ class STL:
     triangles: List[Triangle]
 
     def __repr__(self):
+        tstr = ''
+        for t in self.triangles:
+            tstr += str(t) + '\n'
         return f"Header({len(self.header)}): {self.header}\n" \
                f"Triangle count: {len(self.triangles)}\n" \
-               f"Triangles: {self.triangles}"
+               f"Triangles:\n{tstr}"
 
     @classmethod
     def read(cls, filename: str):

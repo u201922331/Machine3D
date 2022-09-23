@@ -18,7 +18,7 @@ class Wavefront:
         return f'Positions({len(self.positions)}): {self.positions}\n' \
                f'Texture Coordinates({len(self.texCoords)}): {self.texCoords}\n' \
                f'Normals({len(self.normals)}): {self.normals}\n' \
-               f'Face Indices({len(self.faceIndices)}): {self.faceIndices}'
+               f'Face Indices({len(self.faceIndices)}): {self.faceIndices}\n'
 
     @classmethod
     def read(cls, filename: str):
