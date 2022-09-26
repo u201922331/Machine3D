@@ -13,10 +13,10 @@ def main():
                                                  Vec3(1.0, -1.0, 0.0),
                                                  0))
     stlMonkey.write('models/SuzanneOut.stl')
-    dfMonkey: pd.DataFrame = stlMonkey.toDataFrame()
+    dfMonkey = stlMonkey.toDataFrame()
     print(dfMonkey)
 
-    stlMonke2 = handlers.STL.fromDataFrame(dfMonkey)
+    stlMonke2: pd.DataFrame = handlers.STL.fromDataFrame(dfMonkey)
     print(stlMonke2)
 
 

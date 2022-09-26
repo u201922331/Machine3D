@@ -1,12 +1,12 @@
 import struct
 from dataclasses import dataclass
 from typing import List
-from ..triangle import Triangle
 from copy import deepcopy
 import numpy as np
 import pandas as pd
 import sys
 from ..vectors import Vec3
+from ..triangle import Triangle
 
 
 @dataclass
@@ -15,9 +15,12 @@ class STL:
     triangles: List[Triangle]
 
     def __repr__(self):
+        tstr = ''
+        for t in self.triangles:
+            tstr += str(t) + '\n'
         return f"Header({len(self.header)}): {self.header}\n" \
                f"Triangle count: {len(self.triangles)}\n" \
-               f"Triangles: {self.triangles}"
+               f"Triangles:\n{tstr}"
 
     @classmethod
     def read(cls, filename: str):
