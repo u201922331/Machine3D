@@ -68,3 +68,15 @@ class STL:
                                               t['P2']],
                                              t['Attribute']))
         return output
+
+    def boundingBox(self):
+        unique_verts = []
+        for elem in self.triangles:
+            for vtx in elem.vertices:
+                if vtx.array not in unique_verts:
+                    unique_verts.append(vtx.array)
+
+        xMin, yMin, zMin = np.min(unique_verts, axis=1)
+        xMax, yMax, zMax = np.max(unique_verts, axis=1)
+
+        return xMin, xMax, yMin, yMax, zMin, zMax
