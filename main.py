@@ -7,25 +7,17 @@ import SimpleVoxel as svx
 
 
 def main():
-    """
-    stlCube = handlers.STL.read('models/cube.stl')
-    print(stlCube)
-    stlMonkey = handlers.STL.read('models/suzanne.stl')
-    stlMonkey.triangles.append(Triangle.generate(Vec3(-1.0, -1.0, 0.0),
-                                                 Vec3(0.0, 1.0, 0.0),
-                                                 Vec3(1.0, -1.0, 0.0),
-                                                 0))
-    stlMonkey.write('models/SuzanneOut.stl')
-    dfMonkey: pd.DataFrame = stlMonkey.toDataFrame()
-    print(dfMonkey)
+    cube = handlers.STL.read('models/suzanne.stl')
+    boundaries = cube.boundingBox()
+    xlims = boundaries[:2]
+    ylims = boundaries[2:4]
+    zlims = boundaries[4:]
+    w = xlims[1]-xlims[0]
+    h = ylims[1]-ylims[0]
+    d = zlims[1]-zlims[0]
 
-    stlMonke2 = handlers.STL.fromDataFrame(dfMonkey)
-    print(stlMonke2)
-    """
-    c = svx.chunk.Chunk(8, 8, 8)
-    c.plot()
-
-    pass
+    chunk = svx.chunk.Chunk(round(w*10), round(h*10), round(d*10))
+    chunk.plot()
 
 
 if __name__ == '__main__':

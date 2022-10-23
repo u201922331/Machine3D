@@ -10,26 +10,17 @@ class Chunk:
     __w: int
     __h: int
     __d: int
-    __offset: Vec3
+    # __offset: Vec3
 
     def __init__(self, w: int, h: int, d: int):
         self.__w = w
         self.__h = h
         self.__d = d
-        # Random blocks (for testing purposes)
-        """
-        self.blocks = [[[Block(np.random.choice(list(BlockType), p=[0.5, 0.45, 0.05]),
-                               [VertexInfo(Vec3(), 0)])
-                         for _ in range(w)]
-                        for _ in range(d)]
-                       for _ in range(h)]
-        """
-        # We initialize the blocks list as a bunch of empty spaces
-        self.blocks = [[[Block(BlockType.none) for _ in range(w)] for _ in range(d)] for _ in range(h)]
+        self.reset()
 
     @property
-    def shape(self) -> tuple:
-        return self.__w, self.__h, self.__d
+    def shape(self):
+        return self.__h, self.__d, self.__w
 
     def __getitem__(self, item: List[int]):
         x, y, z = item
@@ -39,24 +30,28 @@ class Chunk:
         x, y, z = key
         self.blocks[y][z][x] = value
 
-    def plot(self, c1='#4579CC', c2='#2A3445'):
-        x, y, z = np.indices(self.shape)
+    def update(self, vertices):
+        # Convertir y almancenar los vertices en bloques
+        pass
 
-        colVtx = np.empty(self.shape, dtype=bool)
-        colMsh = np.empty(self.shape, dtype=bool)
-        for i in range(self.__h):
-            for j in range(self.__d):
-                for k in range(self.__w):
-                    colVtx[i][j][k] = self.blocks[i][j][k].bID is BlockType.vertex
-                    colMsh[i][j][k] = self.blocks[i][j][k].bID is BlockType.solid
+    def reset(self):
+        self.blocks = [[[Block(BlockType.none)
+                         for _ in range(self.__w)]
+                        for _ in range(self.__d)]
+                       for _ in range(self.__h)]
 
-        voxels = colVtx | colMsh
+    def plot(self, col='#2A3445', yUp: bool = True):
+        colorSolid = np.empty(self.shape, dtype=bool)
+        for h in range(self.__h):
+            for d in range(self.__d):
+                for w in range(self.__w):
+                    colorSolid[h][d][w] = self.blocks[h][d][w].bID is BlockType.solid
+
+        voxels = colorSolid
         colors = np.empty(voxels.shape, dtype=object)
-        colors[colVtx] = c1
-        colors[colMsh] = c2
+        colors[colorSolid] = col
 
         ax = plt.figure().add_subplot(projection='3d')
         ax.voxels(voxels, facecolors=colors, edgecolors='k')
+        ax.axis('equal')
         plt.show()
-
-        pass
