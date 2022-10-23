@@ -16,11 +16,16 @@ class Chunk:
         self.__w = w
         self.__h = h
         self.__d = d
-        self.blocks = [[[Block(np.random.choice(list(BlockType)),
+        # Random blocks (for testing purposes)
+        """
+        self.blocks = [[[Block(np.random.choice(list(BlockType), p=[0.5, 0.45, 0.05]),
                                [VertexInfo(Vec3(), 0)])
                          for _ in range(w)]
                         for _ in range(d)]
                        for _ in range(h)]
+        """
+        # We initialize the blocks list as a bunch of empty spaces
+        self.blocks = [[[Block(BlockType.none) for _ in range(w)] for _ in range(d)] for _ in range(h)]
 
     @property
     def shape(self) -> tuple:
@@ -30,17 +35,23 @@ class Chunk:
         x, y, z = item
         return self.blocks[y][z][x]
 
-    def __setitem__(self, key: List[int], value):
+    def __setitem__(self, key: List[int], value: Block):
         x, y, z = key
         self.blocks[y][z][x] = value
 
-    def plot(self, c1='#405F91', c2='#2A3445'):
+    def plot(self, c1='#4579CC', c2='#2A3445'):
         x, y, z = np.indices(self.shape)
-        print(np.array(self.blocks, dtype=Block)[0])
-        colVtx = np.array(self.blocks)[y][z][x].bID is BlockType.vertex  # Fix this
-        colMsh = np.array(self.blocks)[y][z][x].bID is BlockType.solid  # Fix this
+
+        colVtx = np.empty(self.shape, dtype=bool)
+        colMsh = np.empty(self.shape, dtype=bool)
+        for i in range(self.__h):
+            for j in range(self.__d):
+                for k in range(self.__w):
+                    colVtx[i][j][k] = self.blocks[i][j][k].bID is BlockType.vertex
+                    colMsh[i][j][k] = self.blocks[i][j][k].bID is BlockType.solid
+
         voxels = colVtx | colMsh
-        colors = np.empty(voxels.shape)
+        colors = np.empty(voxels.shape, dtype=object)
         colors[colVtx] = c1
         colors[colMsh] = c2
 
