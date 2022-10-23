@@ -3,8 +3,11 @@ from My3Dimex.vectors import Vec3
 from My3Dimex.triangle import Triangle
 import pandas as pd
 
+import SimpleVoxel as svx
+
 
 def main():
+    """
     stlCube = handlers.STL.read('models/cube.stl')
     print(stlCube)
     stlMonkey = handlers.STL.read('models/suzanne.stl')
@@ -18,7 +21,13 @@ def main():
 
     stlMonke2 = handlers.STL.fromDataFrame(dfMonkey)
     print(stlMonke2)
+    """
+    c = svx.chunk.Chunk(8, 8, 8)
+    c.plot()
+
+    pass
 
 
 if __name__ == '__main__':
     main()
+
