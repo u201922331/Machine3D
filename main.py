@@ -4,9 +4,14 @@ from My3Dimex.triangle import Triangle
 import pandas as pd
 
 import SimpleVoxel as svx
+import numpy as np
 
 
 def main():
+    dataset = dict(np.load('datasets/custom_arq_dataset.npy', allow_pickle=True).tolist())
+    print(dataset.keys())
+    print(dataset.values())
+
     model = handlers.STL.read('models/suzanne.stl')
     boundaries = model.boundingBox()
     xlims = boundaries[:2]
