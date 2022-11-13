@@ -1,28 +1,29 @@
-from My3Dimex import handlers
-from My3Dimex.vectors import Vec3
-from My3Dimex.triangle import Triangle
-import pandas as pd
-
-import SimpleVoxel as svx
+import matplotlib.pyplot as plt
 import numpy as np
+import tarfile
+import os
 
 
 def main():
-    dataset = dict(np.load('datasets/custom_arq_dataset.npy', allow_pickle=True).tolist())
-    print(dataset.keys())
-    print(dataset.values())
+    with tarfile.open('./datasets/reconstruction/arq_dataset.tar.gz') as file:
+        file.extractall('./datasets/reconstruction/')
+        file.close()
+    dataset = np.load('./datasets/reconstruction/custom_arq_dataset.npy', allow_pickle=True).item()
+    dtest = dataset['test']
 
-    model = handlers.STL.read('models/suzanne.stl')
-    boundaries = model.boundingBox()
-    xlims = boundaries[:2]
-    ylims = boundaries[2:4]
-    zlims = boundaries[4:]
-    w = xlims[1] - xlims[0]
-    h = ylims[1] - ylims[0]
-    d = zlims[1] - zlims[0]
+    os.remove('./datasets/reconstruction/custom_arq_dataset.npy')
 
-    chunk = svx.chunk.Chunk(round(w * 20), round(h * 20), round(d * 20))
-    chunk.plot()
+    rIdx = np.random.randint(0, len(dtest['data'])-1)
+
+    obj = {
+        'label': dtest['labels'][rIdx],
+        'data': np.array(dtest['data'][rIdx])
+    }
+
+    ax = plt.figure().add_subplot(projection='3d')
+    ax.set_title(obj['label'])
+    ax.voxels(obj['data'], facecolors='r')
+    plt.show()
 
 
 if __name__ == '__main__':
