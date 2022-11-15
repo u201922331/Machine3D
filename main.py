@@ -1,4 +1,4 @@
-import this
+from test_save import save_voxel
 
 
 def main():
