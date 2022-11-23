@@ -42,7 +42,7 @@ if __name__ == '__main__':
         }
     })
 
-    index = np.random.randint(0, len(train_x) - 1)
+    index = np.random.randint(0, len(train_x))
     mesh_fract = train_x[index]
     mesh_piece = train_y[index]
 
