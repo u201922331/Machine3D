@@ -19,7 +19,7 @@ if __name__ == '__main__':
     for model in model_tr:
         fract = get_fractured(model)
         train_x.append(fract)
-        train_y.append(model & ~fract)
+        train_y.append(model)
     train_x = np.array(train_x)
     train_y = np.array(train_y)
 
@@ -27,26 +27,26 @@ if __name__ == '__main__':
     for model in model_ts:
         fract = get_fractured(model)
         test_x.append(fract)
-        test_y.append(model & ~fract)
+        test_y.append(model)
     test_x = np.array(test_x)
     test_y = np.array(test_y)
 
     np.save('./datasets/dataset.npy', {
         'train': {
-            'x': train_x,
-            'y': train_y
+            'broken': train_x,
+            'target': train_y
         },
         'test': {
-            'x': test_x,
-            'y': test_y
+            'broken': test_x,
+            'target': test_y
         }
     })
 
     index = np.random.randint(0, len(train_x))
-    mesh_fract = train_x[index]
-    mesh_piece = train_y[index]
+    mesh_broken = train_x[index]
+    mesh_target = train_y[index]
 
     ax = plt.figure().add_subplot(projection='3d')
-    ax.voxels(mesh_fract, facecolors='slategray', alpha=0.5)
-    ax.voxels(mesh_piece, facecolors='orange', edgecolors='darkorange')
+    ax.voxels(mesh_broken, facecolors='slategray', alpha=0.5)
+    ax.voxels(mesh_target&~mesh_broken, facecolors='orange', edgecolors='darkorange')
     plt.show()
