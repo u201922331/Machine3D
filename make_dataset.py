@@ -1,16 +1,13 @@
 import tarfile
-import os
 import numpy as np
 import matplotlib.pyplot as plt
-
-from reconstruction.utils.data_prep import get_fractured
+from utils.data_prep import get_fractured
 
 if __name__ == '__main__':
     with tarfile.open('./datasets/arq_dataset.tar.gz') as file:
         file.extractall('./datasets/')
         file.close()
     dataset = np.load('./datasets/custom_arq_dataset.npy', allow_pickle=True).item()
-    # os.remove('./datasets/custom_arq_dataset.npy')
 
     mask_tr = np.array(dataset['train']['labels']) == 'arq'
     mask_ts = np.array(dataset['test']['labels']) == 'arq'
@@ -27,7 +24,7 @@ if __name__ == '__main__':
     train_y = np.array(train_y)
 
     test_x, test_y = [], []
-    for model in model_tr:
+    for model in model_ts:
         fract = get_fractured(model)
         test_x.append(fract)
         test_y.append(model & ~fract)
