@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from sampling import down
+from .sampling import down
 
 
 class Discriminator(nn.Module):

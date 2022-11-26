@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from utils.constants import *
 from utils.load_as_tensor import load_binvox_as_tensor
+from utils.save_voxel import save_voxel
 from gan_utils.generator import Generator
 from gan_utils.discriminator import Discriminator
 from gan_utils.training import train
@@ -56,6 +57,13 @@ def main():
     ax.voxels(obj, facecolors='darkslategray', alpha=0.5)
     ax.voxels(pcs & ~obj, facecolors='orange', edgecolors='darkorange')
     plt.show()
+
+    should_save_generated = True if input('Want to save generated? (y/n): ') else False
+    if should_save_generated:
+        export_path_broken = input('Path of broken: ')
+        export_path_result = input('Path of generated: ')
+        save_voxel(export_path_broken, obj)
+        save_voxel(export_path_result, pcs & ~obj)
 
 
 if __name__ == '__main__':

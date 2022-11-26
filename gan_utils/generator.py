@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from sampling import down, up
+from .sampling import down, up
 
 
 class Generator(nn.Module):
