@@ -1,18 +1,14 @@
 import torch.nn as nn
 
-PATH = './'
-PATH_MODELS = PATH + '/models'
-PATH_MESHES = PATH + '/meshes'
-PATH_RESULTS = PATH + '/results'
-PATH_CHECKPOINTS_GEN = PATH + '/checkpoints/gen'
-PATH_CHECKPOINTS_DIS = PATH + '/checkpoints/dis'
+ROOT = './'
+MODELS = ROOT + 'models/'
+MESHES = ROOT + 'meshes/'
+DATASETS = ROOT + 'datasets/'
 
-learning_rate = 0.00001
-epochs = 10
+lr = 0.0002
 
-LAMBDA = 100
-
-display_step = 48
 batch_size = 50
 
 criterion = nn.BCEWithLogitsLoss()
+
+tseed_ = 1234

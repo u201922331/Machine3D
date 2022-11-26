@@ -1,56 +1,61 @@
+import torch
+from torch.utils.data import DataLoader
+import numpy as np
+import matplotlib.pyplot as plt
+from utils.constants import *
+from utils.load_as_tensor import load_binvox_as_tensor
 from gan_utils.generator import Generator
 from gan_utils.discriminator import Discriminator
-from gan_utils.custom_loader import load
-from gan_utils.loss_calculation import *
-from utils.constants import *
-import torch
-from tqdm.auto import tqdm
+from gan_utils.training import train
+
+
+torch.manual_seed(tseed_)
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 def main():
-    ltr, lts, mtr_x, mtr_y, mts_x, mts_y = load('./datasets/dataset.npy')
+    dataset = np.load(DATASETS+'dataset.npy', allow_pickle=True).item()
 
-    gen = Generator()
-    dis = Discriminator()
-    gen_opt = torch.optim.Adam(gen.parameters(), lr=learning_rate)
-    dis_opt = torch.optim.Adam(dis.parameters(), lr=learning_rate)
+    mdl_tr_br = [torch.from_numpy(np.array([model]) * 2 - 1).float().to(device) for model in dataset['train']['broken']]
+    mdl_tr_tg = [torch.from_numpy(np.array([model]) * 2 - 1).float().to(device) for model in dataset['train']['target']]
 
-    cur_step = 0
-    mean_gen_loss = 0
-    mean_dis_loss = 0
-    for i in range(epochs):
-        if i % 5 == 0:
-            torch.save(gen.state_dict(), PATH_CHECKPOINTS_GEN + f'/gen_{i}.pth')
-            torch.save(dis.state_dict(), PATH_CHECKPOINTS_DIS + f'/dis_{i}.pth')
+    dataloader = DataLoader(list(zip(mdl_tr_br, mdl_tr_tg)), batch_size=batch_size, shuffle=True)
 
-        for in_data, tg_data in tqdm(ltr):
-            dis_opt.zero_grad()
-            fake = gen(in_data)
-            o_fake = dis(in_data, fake)
-            o_real = dis(in_data, tg_data)
-            dis_loss = discriminator_loss(criterion, o_real, o_fake)
-            dis_loss.backward(retain_graph=True)
-            dis_opt.step()
+    gen = Generator().to(device)
+    dis = Discriminator().to(device)
 
-            gen_opt.zero_grad()
-            fake = gen(in_data)
-            o_fake = dis(in_data, fake)
-            o_real = dis(in_data, tg_data)
-            gen_loss = generator_loss(criterion, o_real, o_fake, tg_data, fake, LAMBDA)
-            gen_loss.backward()
-            gen_opt.step()
+    should_load = True if input('Load backups? (y/n): ').lower() == 'y' else False
+    if should_load:
+        gen_chk_path = input('Generator: ')
+        dis_chk_path = input('Discriminator: ')
 
-            mean_dis_loss += dis_loss.item() / display_step
-            mean_gen_loss += gen_loss.item() / display_step
+        gen.load_state_dict(torch.load(gen_chk_path, map_location=device))
+        dis.load_state_dict(torch.load(dis_chk_path, map_location=device))
 
-            if cur_step % display_step == 0 and cur_step > 0:
-                print(f'Step {cur_step}: Generator loss: {mean_gen_loss}, Discriminator loss: {mean_dis_loss}')
-                mean_gen_loss = 0
-                mean_dis_loss = 0
-            cur_step += 1
+    gen_optimizer = torch.optim.Adam(gen.parameters(), lr)
+    dis_optimizer = torch.optim.Adam(dis.parameters(), lr)
 
-    torch.save(dis.state_dict(), PATH_MODELS + '/dis.pth')
-    torch.save(gen.state_dict(), PATH_MODELS + '/gen.pth')
+    should_train = True if input('Train? (y/n): ').lower() == 'y' else False
+    x_steps, y_gen, y_dis = [], [], []
+    if should_train:
+        gen, dis, x_steps, y_gen, y_dis = train(gen, dis, gen_optimizer, dis_optimizer, dataloader, 100)
+
+        should_save = True if input('Want to save progress? (y/n): ') else False
+        if should_save:
+            torch.save(dis.state_dict(), MODELS+'dis.pth')
+            torch.save(gen.state_dict(), MODELS+'gen.pth')
+
+    obj = load_binvox_as_tensor(MESHES+'jarron.binvox', device)
+    obj = torch.stack([obj, ])
+    pcs = gen(obj)
+
+    obj = obj[0][0].detach().cpu().numpy() > 0
+    pcs = pcs[0][0].detach().cpu().numpy() > 0
+
+    ax = plt.figure().add_subplot(projection='3d')
+    ax.voxels(obj, facecolors='darkslategray', alpha=0.5)
+    ax.voxels(pcs & ~obj, facecolors='orange', edgecolors='darkorange')
+    plt.show()
 
 
 if __name__ == '__main__':

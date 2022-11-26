@@ -2,12 +2,13 @@ import tarfile
 import numpy as np
 import matplotlib.pyplot as plt
 from utils.data_prep import get_fractured
+from utils.constants import *
 
 if __name__ == '__main__':
-    with tarfile.open('./datasets/arq_dataset.tar.gz') as file:
-        file.extractall('./datasets/')
+    with tarfile.open(DATASETS+'arq_dataset.tar.gz') as file:
+        file.extractall(DATASETS)
         file.close()
-    dataset = np.load('./datasets/custom_arq_dataset.npy', allow_pickle=True).item()
+    dataset = np.load(DATASETS+'custom_arq_dataset.npy', allow_pickle=True).item()
 
     mask_tr = np.array(dataset['train']['labels']) == 'arq'
     mask_ts = np.array(dataset['test']['labels']) == 'arq'
@@ -31,7 +32,7 @@ if __name__ == '__main__':
     test_x = np.array(test_x)
     test_y = np.array(test_y)
 
-    np.save('./datasets/dataset.npy', {
+    np.save(DATASETS+'dataset.npy', {
         'train': {
             'x': train_x,
             'y': train_y

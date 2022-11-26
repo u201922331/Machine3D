@@ -1,27 +1,24 @@
 import torch
 import torch.nn as nn
-from sampling import downsample
+from sampling import down
 
 
 class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
 
-        self.down_stack = [
-            downsample(2, 16, batch=False),
-            downsample(16, 32),
-            downsample(32, 64, stride=2),
-            downsample(64, 64, stride=2),
-            downsample(64, 64, stride=2)
-        ]
+        self.d1 = down(2, 16, batch=False)
+        self.d2 = down(16, 32)
+        self.d3 = down(32, 64, stride=2)
+        self.d4 = down(64, 64, stride=2)
 
-        self.result = nn.ConvTranspose3d(64, 1, kernel_size=4)
-        self.act = nn.Sigmoid()
+        self.res = nn.ConvTranspose3d(64, 1, 4)
+        self.activator = nn.SiLU()
 
     def forward(self, x, y):
         x = torch.cat((x, y), dim=1)
 
-        for elem in self.down_stack:
-            x = elem(x.float())
+        for elem in (self.d1, self.d2, self.d3, self.d4):
+            x = elem(x)
 
-        return self.act(self.result(x))
+        return self.activator(self.res(x))
